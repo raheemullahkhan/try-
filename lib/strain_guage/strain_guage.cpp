@@ -14,7 +14,7 @@ bool object_detected_between_extremes(bool complex_flag,uint64_t free_step)
     a=0;
   }
   
-  if (complex_flag==real)
+  if (complex_flag==real&&free_step>10)
       {
           if(  result>force_allowed)
           {
@@ -27,6 +27,13 @@ bool object_detected_between_extremes(bool complex_flag,uint64_t free_step)
                   a= 0;
             }
     }
+  if (complex_flag==real&&free_step<10)
+ {
+   a=0;
+   Serial.print("real_free_steps");
+   Serial.println(free_step);
+   }
+
 
 return a;
 

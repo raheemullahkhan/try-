@@ -10,6 +10,7 @@ uint64_t real_step_with_out_strainguage_monitor;
 #define imagnary_second_time 0
 #define reversed 1
 #define not_reversed 0
+int real_free_step=0;
 bool imagnary_entered=imagnary_first_time;
 bool complex_flag=real;
 bool direction = 0;
@@ -60,7 +61,9 @@ if(imagnary_direction!=imagnary_first_entered_direction&&imagnary_entered==imagn
 
 static void real_move_one_step(int pulseDuration)
 {
-    
+    real_free_step++;
+    if (real_free_step>1500)
+    real_free_step=1000;
     for (int i = 0; i < pulse_in_one_step; ++i) 
     {
         digitalWrite(Real_pulse_pin, HIGH);
@@ -92,6 +95,7 @@ static void imagnary_move_one_step(int pulseDuration)
         real_step_with_out_strainguage_monitor=0;
         Serial.println("imagnary cycle ended");
         imagnary_entered=imagnary_first_time;
+        real_free_step=0;
        }
 
 
@@ -108,7 +112,7 @@ static void imagnary_move_one_step(int pulseDuration)
 
 void update_flags(void)
 {
-    if(object_detected_between_extremes(complex_flag,real_step_with_out_strainguage_monitor++))//detect collision in real motion not during imagnary motion 
+    if(object_detected_between_extremes(complex_flag,real_free_step))//detect collision in real motion not during imagnary motion 
         complex_flag=imagnary;
     
 }
