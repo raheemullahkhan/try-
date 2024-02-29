@@ -5,38 +5,62 @@
 #include<strain_guage.h>
 #define real 1
 #define imagnary 0
-#define imagnary 1
+uint64_t real_step_with_out_strainguage_monitor; 
 #define imagnary_first_time 1
 #define imagnary_second_time 0
+#define reversed 1
+#define not_reversed 0
 bool imagnary_entered=imagnary_first_time;
 bool complex_flag=real;
 bool direction = 0;
 bool imagnary_first_entered_direction;
 bool imagnary_direction=direction;
-uint32_t imagnary_step_count=0;
+bool imagnary_direction_change_test=not_reversed;
+uint64_t imagnary_step_count=0;
+
+
 void cheack_first_time_entered()
 {
 if (imagnary_entered==imagnary_first_time)
-        imagnary==imagnary_second_time;
+    {
+        Serial.println("imagnary entered first time");
+            imagnary==imagnary_second_time;
+    }
 }
-bool imagnary_direction_reversed()
+void cheack_imagnary_direction_reversed()
 {
+    Serial.print("direction");
+    Serial.println(direction);
 if(imagnary_entered==imagnary_first_time)
    {
      imagnary_direction=direction;
      imagnary_first_entered_direction=direction;
-    return 0;
+     imagnary_direction_change_test=not_reversed;
+     Serial.println("first_direction_noted");
+
    }
-if(imagnary_direction!=imagnary_first_entered_direction)
-    return 1;
-else 
-    return 0;
+
+if(imagnary_direction!=imagnary_first_entered_direction&&imagnary_entered==imagnary_second_time)
+    {
+        imagnary_direction=direction;
+        imagnary_direction_change_test=reversed;
+        Serial.println("reversed");
+    
+    }
+ if(imagnary_direction==imagnary_first_entered_direction&&imagnary_entered==imagnary_second_time)
+    {
+        imagnary_direction=direction;
+        imagnary_direction_change_test=not_reversed;
+        Serial.println("same");
+
+    }
+
 
 }
 
 static void real_move_one_step(int pulseDuration)
 {
-    complex_flag=real;
+    
     for (int i = 0; i < pulse_in_one_step; ++i) 
     {
         digitalWrite(Real_pulse_pin, HIGH);
@@ -46,19 +70,27 @@ static void real_move_one_step(int pulseDuration)
     }
 
 }
+
 static void imagnary_move_one_step(int pulseDuration)
 {
-    complex_flag=imagnary;
-    if (imagnary_direction_reversed())
-        imagnary_step_count--;
+    Serial.println("imagnary_entered");
+    if (imagnary_direction_change_test==reversed)
+       { imagnary_step_count--;
+                 Serial.print("imagnary_count");
+         Serial.println(imagnary_step_count);
+       }
     else 
        {
          imagnary_step_count++;
+         Serial.print("imagnary_count");
+         Serial.println(imagnary_step_count);
          imagnary_entered=imagnary_second_time;
        }
     if (imagnary_step_count==0)//imagnary round completed 
        {
-        complex_flag=0;
+        complex_flag=real;
+        real_step_with_out_strainguage_monitor=0;
+        Serial.println("imagnary cycle ended");
         imagnary_entered=imagnary_first_time;
        }
 
@@ -74,20 +106,30 @@ static void imagnary_move_one_step(int pulseDuration)
 
 }
 
+void update_flags(void)
+{
+    if(object_detected_between_extremes(complex_flag,real_step_with_out_strainguage_monitor++))//detect collision in real motion not during imagnary motion 
+        complex_flag=imagnary;
+    
+}
 void generate_steps(int number_of_steps, int pulseDuration)
  {
    for(int j=0;j<number_of_steps;j++)
    {
-    if(object_detected_between_extremes(complex_flag))//detect collision in real motion not during imagnary motion
-     { 
-        cheack_first_time_entered();
-        imagnary_move_one_step(pulseDuration);
-     }
+    update_flags();
+    if(complex_flag==imagnary)
+    {
+       
+         cheack_imagnary_direction_reversed();
+          cheack_first_time_entered();
+          imagnary_move_one_step(pulseDuration);
+
+    }
     else
-      {
-        real_move_one_step(pulseDuration); 
-      }
+    real_move_one_step(pulseDuration);
    }
+
+
 }
 
 void changeDirection() {

@@ -5,7 +5,7 @@
 #include <SPI.h>
 #define real 1
 #define imagnary 0
-bool object_detected_between_extremes(bool);
+bool object_detected_between_extremes(bool,uint64_t );
 #define ADS1220_CS_PIN    5 // chip select pin
 #define ADS1220_DRDY_PIN  34 // data ready pin 
 void initialize_strian_guage();

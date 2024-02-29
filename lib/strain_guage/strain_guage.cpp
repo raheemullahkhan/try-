@@ -1,25 +1,36 @@
 #include<strain_guage.h>
 ADS1220_WE ads = ADS1220_WE(ADS1220_CS_PIN, ADS1220_DRDY_PIN);
-double force_allowed=500;
+double force_allowed=200;
+#define free_step_limit 8
 
-
-bool object_detected_between_extremes(bool complex_flag) 
+bool object_detected_between_extremes(bool complex_flag,uint64_t free_step) 
 {
-  
+  bool a;
   double result= ads.getRawData();
-  Serial.println(result);
-  if(complex_flag==real)
-  return 0;
-  if(  result<force_allowed)
-  return 1;
-  else
-  return 0;
+ // Serial.println(result);
+  if(complex_flag==imagnary)
+  {
+    Serial.println("imagnary collision not allowed");
+    a=0;
+  }
+  
+  if (complex_flag==real)
+      {
+          if(  result>force_allowed)
+          {
+            Serial.println("collision detected");
+            a= 1;
+          }
+            else
+            {
+              //Serial.println("collision not detected");
+                  a= 0;
+            }
+    }
+
+return a;
 
 }
-
-
-
-
 void initialize_strian_guage()
 {
 Serial.println("scale_initialize");

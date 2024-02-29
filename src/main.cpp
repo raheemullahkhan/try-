@@ -22,12 +22,12 @@ void task2(void *parameter) {
 
           int duration=10;
     while (1) {
-        generate_steps(64, duration);
+        generate_steps(20, duration);
         changeDirection();
         
-        generate_steps(64, duration);
+        generate_steps(20, duration);
         changeDirection(); 
-        Serial.println("task1");
+       // Serial.println("task1");
     }
     vTaskDelay(40);
 }
@@ -47,13 +47,13 @@ void setup() {
 }
 
 void loop() {
-            int duration=20;
+            int duration=30;
     while (1) {
         generate_steps(90, duration);
         changeDirection();
         
         generate_steps(90, duration);
         changeDirection(); 
-        Serial.println("task1");
+
     }
 }
