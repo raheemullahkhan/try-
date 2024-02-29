@@ -1,7 +1,4 @@
 
-
-
-
 #include "motor.h"
 #include <Arduino.h>
 #include <freertos/FreeRTOS.h>
@@ -9,28 +6,11 @@
 #include <strain_guage.h>
 #define STACK_SIZE 9048
 #define DELAY_MS 1000
+extern uint32_t step_count;
 
-void task1(void *pulse_duration) {
-  while (true) {
-    Serial.println("Task 2 is running");
-    vTaskDelay(pdMS_TO_TICKS(DELAY_MS));
-  }
 
-}
 
-void task2(void *parameter) {
 
-          int duration=10;
-    while (1) {
-        generate_steps(20, duration);
-        changeDirection();
-        
-        generate_steps(20, duration);
-        changeDirection(); 
-       // Serial.println("task1");
-    }
-    vTaskDelay(40);
-}
 
 void setup() {
   Serial.begin(115200);
@@ -39,7 +19,8 @@ void setup() {
     set_up_direction();
     initialize_strian_guage();
       Serial.begin(115200);
-  
+  step_count=0;
+
 
   
 //  xTaskCreatePinnedToCore(task1, "Task1", STACK_SIZE, NULL, 1, NULL, 1);  // Run task1 on core 1
@@ -47,12 +28,12 @@ void setup() {
 }
 
 void loop() {
-            int duration=30;
+            int duration=300;
     while (1) {
-        generate_steps(90, duration);
+        generate_steps(7, duration);
         changeDirection();
         
-        generate_steps(90, duration);
+        generate_steps(7, duration);
         changeDirection(); 
 
     }

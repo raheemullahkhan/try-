@@ -3,18 +3,18 @@ ADS1220_WE ads = ADS1220_WE(ADS1220_CS_PIN, ADS1220_DRDY_PIN);
 double force_allowed=200;
 #define free_step_limit 8
 
-bool object_detected_between_extremes(bool complex_flag,uint64_t free_step) 
+bool object_detected_between_extremes(bool complex_flag,uint8_t free_step,uint8_t step_count) 
 {
   bool a;
   double result= ads.getRawData();
  // Serial.println(result);
   if(complex_flag==imagnary)
   {
-    Serial.println("imagnary collision not allowed");
+   // Serial.println("imagnary collision not allowed");
     a=0;
   }
   
-  if (complex_flag==real&&free_step>10)
+  if (complex_flag==real&&free_step>5)
       {
           if(  result>force_allowed)
           {
@@ -27,12 +27,14 @@ bool object_detected_between_extremes(bool complex_flag,uint64_t free_step)
                   a= 0;
             }
     }
-  if (complex_flag==real&&free_step<10)
+  if (complex_flag==real&&free_step<5)
  {
    a=0;
-   Serial.print("real_free_steps");
-   Serial.println(free_step);
+   //Serial.print("real_free_steps");
+   //Serial.println(free_step);
    }
+   if(abs(step_count)<3)// donot detect collision -3<stepcount<3
+   a=0;
 
 
 return a;
