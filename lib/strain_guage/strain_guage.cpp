@@ -2,21 +2,26 @@
 ADS1220_WE ads = ADS1220_WE(ADS1220_CS_PIN, ADS1220_DRDY_PIN);
 double force_allowed=200;
 #define free_step_limit 8
-
+double value_at_extreme=0;
+void take_value_after_two_step_of_direction_change()
+{
+  value_at_extreme=ads.getRawData();
+  Serial.println(value_at_extreme);
+}
 bool object_detected_between_extremes(bool complex_flag,uint8_t free_step,uint8_t step_count) 
 {
   bool a;
   double result= ads.getRawData();
- // Serial.println(result);
+  //Serial.println(result);
   if(complex_flag==imagnary)
   {
    // Serial.println("imagnary collision not allowed");
     a=0;
   }
   
-  if (complex_flag==real&&free_step>5)
+  if (complex_flag==real&&free_step>9)
       {
-          if(  result>force_allowed)
+          if(abs(abs(result)-abs(value_at_extreme))>force_allowed)
           {
             Serial.println("collision detected");
             a= 1;
@@ -27,11 +32,18 @@ bool object_detected_between_extremes(bool complex_flag,uint8_t free_step,uint8_
                   a= 0;
             }
     }
-  if (complex_flag==real&&free_step<5)
+  if (complex_flag==real&&free_step<9)
  {
    a=0;
+    value_at_extreme=ads.getRawData();   
    //Serial.print("real_free_steps");
    //Serial.println(free_step);
+   }
+   if (complex_flag==real&&free_step==9)
+ {
+   
+    value_at_extreme=ads.getRawData();   
+
    }
    if(abs(step_count)<3)// donot detect collision -3<stepcount<3
    a=0;

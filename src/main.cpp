@@ -14,11 +14,11 @@ extern uint32_t step_count;
 
 void setup() {
   Serial.begin(115200);
-      motor_init();
-    enable_motor();
-    set_up_direction();
-    initialize_strian_guage();
-      Serial.begin(115200);
+  motor_init();
+  enable_motor();
+  set_up_direction();
+  initialize_strian_guage();
+  
   step_count=0;
 
 
@@ -28,12 +28,11 @@ void setup() {
 }
 
 void loop() {
-            int duration=300;
+    int duration=20;
     while (1) {
-        generate_steps(7, duration);
+        generate_steps(80, duration);
         changeDirection();
-        
-        generate_steps(7, duration);
+        generate_steps(80, duration);
         changeDirection(); 
 
     }

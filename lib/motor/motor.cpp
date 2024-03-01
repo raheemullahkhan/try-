@@ -12,7 +12,9 @@
 #define reversed 1
 #define not_reversed 0
 uint64_t step_count=0;
+int steps_after_direction_change;
 uint64_t step_at_time_of_imagnary_entered=0;
+uint8_t real_step_after_direction_change=20;
 int real_free_step=500;
 bool imagnary_entered=imagnary_first_time;
 bool complex_flag=real;
@@ -68,9 +70,12 @@ static void real_move_one_step(int pulseDuration)
     real_free_step++;
     if (real_free_step>100)
     real_free_step=50;
-
-
-
+    steps_after_direction_change++;
+    if(steps_after_direction_change==2)
+    {
+        Serial.println("note extreme value");  
+       take_value_after_two_step_of_direction_change();
+    }
     for (int i = 0; i < pulse_in_one_step; ++i) 
     {
         digitalWrite(Real_pulse_pin, HIGH);
@@ -82,19 +87,14 @@ static void real_move_one_step(int pulseDuration)
     step_count++;
 if (direction==downword)
     step_count--;
-//Serial.print("real steps count");
-   // Serial.println(step_count);
+Serial.print("real steps count");
+   Serial.println(step_count);
 
 
 }
 
 static void imagnary_move_one_step(int pulseDuration)
 {
-
-
-
-
-
     for (int i = 0; i < pulse_in_one_step; ++i) 
     {
         digitalWrite(imagnary_pulse_pin, HIGH);
@@ -120,7 +120,11 @@ if (direction==downword)
          //Serial.println(imagnary_step_count);
          imagnary_entered=imagnary_second_time;
        }
-    if (imagnary_direction==reversed&&step_count==step_at_time_of_imagnary_entered)//imagnary round completed 
+
+             Serial.print("step count in imagnary portion");
+        Serial.println(step_count);
+        Serial.println(reversed);
+    if (step_count==step_at_time_of_imagnary_entered)//imagnary round completed 
        {
         complex_flag=real;
         Serial.print("steps at time of imagnary_leaving");
@@ -137,6 +141,9 @@ void update_flags(void)
     if(object_detected_between_extremes(complex_flag,real_free_step,step_count))//detect collision in real motion not during imagnary motion 
     {
         complex_flag=imagnary;
+        steps_after_direction_change=0;
+        
+        
         
     }
     
@@ -158,7 +165,11 @@ void generate_steps(int number_of_steps, int pulseDuration)
 }
 
 void changeDirection() {
+
     direction = !direction;
+    steps_after_direction_change=0;
+    if(complex_flag==real)
+    steps_after_direction_change=0;
     digitalWrite(DIRECTION_PIN, direction);  // Toggle direction
 }
 
