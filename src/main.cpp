@@ -1,16 +1,17 @@
 
-#include "motor.h"
+/*#include "motor.h"
 #include <Arduino.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include <strain_guage.h>
+#include<freeRtos_ads_1220.h>
 #define STACK_SIZE 9048
 #define DELAY_MS 1000
 extern uint32_t step_count;
+*/
 
 
-
-
+/*
 
 void setup() {
   Serial.begin(115200);
@@ -36,4 +37,34 @@ void loop() {
         changeDirection(); 
 
     }
+}*/
+
+
+#include <Arduino.h>
+#include<freertos/FreeRTOS.h>
+#include<freertos/task.h>
+#include<freeRtos_ads_1220.h>
+#include <strain_guage.h>
+ TaskHandle_t Taskh1=NULL;
+void ads_collision(void *p)
+{
+  while(1)
+  {
+  object_detected_between_extremes(1,10,20);
+ vTaskDelay(pdMS_TO_TICKS(20));
+  }
 }
+
+void setup() {
+  Serial.begin(115200);
+    initialize_strian_guage();
+    pinMode(34, INPUT_PULLUP);
+     xTaskCreate(update_ads_dataRtos,"printing",2040,NULL,1,&Taskh1);
+      xTaskCreate(release_suspend_ads,"printing",2040,NULL,1,NULL);
+  xTaskCreate(ads_collision,"straingurage",2030,NULL,1,NULL);
+}
+
+void loop() {
+  // Your main code here
+}
+
