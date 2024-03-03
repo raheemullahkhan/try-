@@ -13,7 +13,7 @@ void release_suspend_ads(void *par)
 {
   while(1)
   {
-    if(digitalRead(34)==LOW)
+    if(digitalRead(34)==LOW&&!extreme_taking_data)
     vTaskResume(Taskh1);
     vTaskDelay(pdMS_TO_TICKS(3));
 
@@ -36,7 +36,8 @@ void update_ads_dataRtos(void *par)
     rawResult = (rawResult << 8);
      command(ADS1220_START);
      strain_guage_rtos = (static_cast<int32_t>(rawResult)) >> 8;
-//Serial.println(strain_guage_rtos);
+Serial.print("updated");
+Serial.println(strain_guage_rtos);
 
    
     vTaskSuspend(NULL);

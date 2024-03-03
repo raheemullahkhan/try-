@@ -87,8 +87,8 @@ static void real_move_one_step(int pulseDuration)
     step_count++;
 if (direction==downword)
     step_count--;
-Serial.print("real steps count");
-   Serial.println(step_count);
+//Serial.print("real steps count");
+ //  Serial.println(step_count);
 
 
 }

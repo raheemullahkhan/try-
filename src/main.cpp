@@ -45,23 +45,40 @@ void loop() {
 #include<freertos/task.h>
 #include<freeRtos_ads_1220.h>
 #include <strain_guage.h>
+#include <motor.h>
+extern uint32_t step_count;
  TaskHandle_t Taskh1=NULL;
-void ads_collision(void *p)
+
+void motortask(void * p)
 {
   while(1)
   {
-  object_detected_between_extremes(1,10,20);
- vTaskDelay(pdMS_TO_TICKS(20));
+    int duration=20;
+    while (1) {
+        generate_steps(80, duration);
+        changeDirection();
+        generate_steps(80, duration);
+        changeDirection();
+        vTaskDelay(pdMS_TO_TICKS(1));
+      
+
+    }
   }
 }
-
 void setup() {
   Serial.begin(115200);
+  motor_init();
+  enable_motor();
+  set_up_direction();
+
+  
+  step_count=0;
     initialize_strian_guage();
     pinMode(34, INPUT_PULLUP);
-     xTaskCreate(update_ads_dataRtos,"printing",2040,NULL,1,&Taskh1);
-      xTaskCreate(release_suspend_ads,"printing",2040,NULL,1,NULL);
-  xTaskCreate(ads_collision,"straingurage",2030,NULL,1,NULL);
+     xTaskCreatePinnedToCore(update_ads_dataRtos,"printing",2040,NULL,1,&Taskh1,0);
+      xTaskCreatePinnedToCore(release_suspend_ads,"printing",2040,NULL,1,NULL,0);
+    
+      xTaskCreatePinnedToCore(motortask,"motor_running",3040,NULL,1,NULL,1);
 }
 
 void loop() {
