@@ -13,7 +13,7 @@ void release_suspend_ads(void *par)
 {
   while(1)
   {
-    if(digitalRead(34)==LOW&&!extreme_taking_data)
+    if(digitalRead(4)==LOW&&!extreme_taking_data)
     vTaskResume(Taskh1);
     vTaskDelay(pdMS_TO_TICKS(3));
 

@@ -9,7 +9,7 @@
 void take_value_after_two_step_of_direction_change();
 bool object_detected_between_extremes(bool,uint8_t,uint8_t );
 #define ADS1220_CS_PIN    5 // chip select pin
-#define ADS1220_DRDY_PIN  34 // data ready pin 
+#define ADS1220_DRDY_PIN  4 // data ready pin 
 void initialize_strian_guage();
 void scale_init();
 
