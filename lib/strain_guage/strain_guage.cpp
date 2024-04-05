@@ -1,9 +1,9 @@
 #include<strain_guage.h>
 ADS1220_WE ads = ADS1220_WE(ADS1220_CS_PIN, ADS1220_DRDY_PIN);
 #include<freeRtos_ads_1220.h>
-extern int32_t strain_guage_rtos;
+extern double strain_guage_rtos;
 bool extreme_taking_data=0;
-double force_allowed=400;
+double force_allowed=70;
 
 #define free_step_limit 8
 double value_at_extreme=0;
@@ -19,7 +19,7 @@ bool object_detected_between_extremes(bool complex_flag,uint8_t free_step,uint8_
 {
   bool a;
   double result= strain_guage_rtos;
-  //Serial.println(result);
+  Serial.println(result);
   if(complex_flag==imagnary)
   {
    // Serial.println("imagnary collision not allowed");

@@ -22,10 +22,21 @@ void motortask(void * p)
         changeDirection();
         generate_steps(80, duration);
         changeDirection();
-        vTaskDelay(pdMS_TO_TICKS(1));
-      
-
     }
+  }
+}
+
+void ads1256_task(void * p)
+{
+  while(1)
+  {
+   if(digitalRead(4)==LOW)
+      {
+            ads_1256_interrupt_read();
+      }
+   else
+    vTaskDelay(pdMS_TO_TICKS(2));
+
   }
 }
 void setup() {
@@ -35,20 +46,20 @@ void setup() {
   set_up_direction();  
   step_count=0;
   ads1256_init();
-   attachInterrupt(4, handleInterrupt, FALLING);
+
   
-   //pinMode(5, INPUT_PULLUP);
+   pinMode(4, INPUT_PULLUP);
    
     // initialize_strian_guage();
-    xTaskCreatePinnedToCore(update_ads_dataRtos,"printing",2040,NULL,1,&Taskh1,0);
+   // xTaskCreatePinnedToCore(update_ads_dataRtos,"printing",2040,NULL,1,&Taskh1,1);
     //  xTaskCreatePinnedToCore(release_suspend_ads,"printing",2040,NULL,1,NULL,0);
-    
-    //  xTaskCreatePinnedToCore(motortask,"motor_running",3040,NULL,1,NULL,1);
+      xTaskCreatePinnedToCore(ads1256_task,"ads 1256",3040,NULL,1,NULL,0);
+      xTaskCreatePinnedToCore(motortask,"motor_running",3040,NULL,1,NULL,1);
 }
 
 void loop() {
   // Your main code here
- // ads_1256_read();
+ //Serial.println(ads_1256_read());
  //ads_1256_interrupt_read();
 }
 

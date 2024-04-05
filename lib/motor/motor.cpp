@@ -67,7 +67,7 @@ if (imagnary_entered==imagnary_first_time)
 
 static void real_move_one_step(int pulseDuration)
 {
-    real_free_step++;
+ /*   real_free_step++;
     if (real_free_step>100)
     real_free_step=50;
     steps_after_direction_change++;
@@ -75,18 +75,18 @@ static void real_move_one_step(int pulseDuration)
     {
         Serial.println("note extreme value");  
        take_value_after_two_step_of_direction_change();
-    }
+    }*/
     for (int i = 0; i < pulse_in_one_step; ++i) 
     {
         digitalWrite(Real_pulse_pin, HIGH);
-         delayMicroseconds (pulseDuration);
+         delayMicroseconds(pulseDuration);
         digitalWrite(Real_pulse_pin, LOW);
         delayMicroseconds(pulseDuration);
     }
-    if(direction==upwarde)
-    step_count++;
-if (direction==downword)
-    step_count--;
+ //   if(direction==upwarde)
+  //  step_count++;
+//if (direction==downword)
+ //   step_count--;
 //Serial.print("real steps count");
  //  Serial.println(step_count);
 
@@ -98,9 +98,9 @@ static void imagnary_move_one_step(int pulseDuration)
     for (int i = 0; i < pulse_in_one_step; ++i) 
     {
         digitalWrite(imagnary_pulse_pin, HIGH);
-        delayMicroseconds(pulseDuration);
+        vTaskDelay(pulseDuration);
         digitalWrite(imagnary_pulse_pin, LOW);
-        delayMicroseconds(pulseDuration);
+        vTaskDelay(pulseDuration);
     }
 if(direction==upwarde)
     step_count++;
@@ -152,15 +152,18 @@ void generate_steps(int number_of_steps, int pulseDuration)
  {
    for(int j=0;j<number_of_steps;j++)
    {
+     real_move_one_step(pulseDuration);
     update_flags();
-    if(complex_flag==imagnary)
+    /*if(complex_flag==imagnary)
     {
          cheack_imagnary_direction_reversed();
           cheack_first_time_entered();
+        //  vTaskDelay(10);
           imagnary_move_one_step(pulseDuration);
     }
     else
-    real_move_one_step(pulseDuration);
+   real_move_one_step(pulseDuration);*/
+  // Serial.println("steps");
    }
 }
 

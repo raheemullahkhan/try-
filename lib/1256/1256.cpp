@@ -7,6 +7,8 @@
 #include<1256.h>
 #include "Arduino.h"
 #include "SPI.h"
+#include<freertos/FreeRTOS.h>
+#include<freertos/task.h>
 #define SPI_SCK  18  // GPIO pin for SPI clock
 #define SPI_MISO 19  // GPIO pin for SPI MISO
 #define SPI_MOSI 23  // GPIO pin for SPI MOSI
@@ -43,6 +45,7 @@ void ads1256_init(void)
    
         digitalWrite(ads_restart_pin,LOW);
 }
+
  double ads_1256_interrupt_read(void)
  {
         if(1)
@@ -62,7 +65,7 @@ void ads1256_init(void)
         if((abs(ads_value_now)-abs(ads_value_prev))<100)
        {
         strain_guage_rtos=ads_value_now;
-         Serial.println(ads_value_now);
+        // Serial.println(ads_value_now);
        }
         //Serial.print(counter);
       // Serial.print(" SR: ");
@@ -104,8 +107,8 @@ double ads_1256_read(void)
   Serial.print("wrong value");
   wrong_count++;
 
-  if (wrong_count>2000)
-  ESP.restart();
+ // if (wrong_count>2000)
+ // ESP.restart();
   
 
  }
