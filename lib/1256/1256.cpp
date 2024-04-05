@@ -11,21 +11,20 @@
 #define SPI_MISO 19  // GPIO pin for SPI MISO
 #define SPI_MOSI 23  // GPIO pin for SPI MOSI
 // new changes  ***************************************************
-
-
+double ads_value_now;
+double ads_value_prev;
+double strain_guage_rtos=0;
 #define INTERRUPT_PIN  4  // Example GPIO pin, change as needed
 
 volatile bool interruptTriggered = false;
 
-void IRAM_ATTR handleInterrupt() {
-  interruptTriggered = true;
-}
+
 
 #define ads_restart_pin 5
 float clockMHZ = 7.68; // crystal frequency used on ADS1256
-float vRef = 5; // voltage reference
+float vRef = -5; // voltage reference
 ADS1256 adc(clockMHZ,vRef,false); // RESETPIN is permanently tied to 3.3v
-float sensor1, sps;
+long sensor1, sps;
 long lastTime, currentTime, elapsedTime; 
 int counter; 
 int wrong_count=0;
@@ -34,39 +33,55 @@ void ads1256_init(void)
   pinMode(ads_restart_pin,OUTPUT);
   digitalWrite(ads_restart_pin,HIGH);
   Serial.println("Starting ADC");
-  delay(300);
+  delay(500);
    digitalWrite(ads_restart_pin,LOW);
-   delay(200);
-  adc.begin(ADS1256_DRATE_500SPS,ADS1256_GAIN_1,false); 
+   delay(300);
+  adc.begin(ADS1256_DRATE_100SPS,ADS1256_GAIN_1,false); 
   Serial.println("ADC Started");
-  adc.setChannel(0,1);
+  adc.setChannel(1,0);
     pinMode(INTERRUPT_PIN, INPUT_PULLUP);
-      attachInterrupt(INTERRUPT_PIN, handleInterrupt, FALLING);
+   
         digitalWrite(ads_restart_pin,LOW);
 }
- void ads_1256_interrupt_read(void)
+ double ads_1256_interrupt_read(void)
  {
-  if(interruptTriggered)
-  { interruptTriggered = false;
-   currentTime = millis();
-  elapsedTime = currentTime - lastTime; 
-  if (elapsedTime >= 1000){ 
-    sps = counter*1.0/elapsedTime*1000;
-    lastTime = currentTime; 
-    counter=0;    
-  }  
-  
-  sensor1 = adc.readCurrentChannelRaw(); // DOUT arriving here is from MUX AIN0 and AIN8 (GND)
-  counter++; 
-  //Serial.print("C: ");
-  //Serial.print(counter);
- // Serial.print(" SR: ");
- 
-  Serial.print("sps");
-  Serial.print(sps);
- Serial.print("guage");
- Serial.println(sensor1);
- }}
+        if(1)
+        { 
+          interruptTriggered = false;
+        currentTime = millis();
+        elapsedTime = currentTime - lastTime; 
+        if (elapsedTime >= 1000)
+          { 
+            sps = counter*1.0/elapsedTime*1000;
+            lastTime = currentTime; 
+            counter=0;    
+          }  
+        ads_value_prev=ads_value_now;
+        ads_value_now= adc.readCurrentChannel()*100000,14; // DOUT arriving here is from MUX AIN0 and AIN8 (GND)
+        counter++; 
+        if((abs(ads_value_now)-abs(ads_value_prev))<100)
+       {
+        strain_guage_rtos=ads_value_now;
+         Serial.println(ads_value_now);
+       }
+        //Serial.print(counter);
+      // Serial.print(" SR: ");
+      
+      // Serial.print("sps");
+       // Serial.println(sps);
+    //  Serial.print("guage");
+      //Serial.println(sensor1);
+      /* if(!(sps>200&&sps<550))
+          {
+            Serial.print("wrong value");
+            wrong_count++;
+            if (wrong_count>2000)
+            ESP.restart();
+          }*/
+    
+      }
+return 1;
+ }
 double ads_1256_read(void)
 {
   if(interruptTriggered)
@@ -88,10 +103,10 @@ double ads_1256_read(void)
  {
   Serial.print("wrong value");
   wrong_count++;
-  Serial.println(sps);
+
   if (wrong_count>2000)
   ESP.restart();
-  return 0;
+  
 
  }
  else

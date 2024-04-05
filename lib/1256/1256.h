@@ -13,7 +13,7 @@
     
     void ads1256_init(void);
     double ads_1256_read(void);
-    void ads_1256_interrupt_read(void);
+    double ads_1256_interrupt_read(void);
 
 
 
